@@ -40,8 +40,7 @@
                          type="text">
                   <div>
                       <span class="pull-right">
-                           <button @click="editandoTarea = index"
-                                   
+                           <button @click="editandoTarea = index"                                   
                                   v-show="tarea.completado === false"
                                   class="btn btn-default btn-xs">
                               <span class="glyphicon glyphicon-pencil"></span>
@@ -52,17 +51,17 @@
                                   class="btn btn-default btn-xs">
                               <span class="glyphicon glyphicon-floppy-saved"></span>
                           </button>                         
-                          <button @click="tarea.completado = true"
+                          <button @click="actualizarEstadoTarea(true, tarea)"
                                   v-show="tarea.completado === false"
                                   class="btn btn-primary btn-xs">
                               <span class="glyphicon glyphicon-ok"></span>
                           </button>
-                          <button @click="tarea.completado = false"
+                          <button @click="actualizarEstadoTarea(false, tarea)"
                                   v-show="tarea.completado === true"
                                   class="btn btn-primary btn-xs">
                               <span class="glyphicon glyphicon-repeat"></span>
                           </button>
-                          <button @click="eliminarTarea(index)"
+                          <button @click="eliminarTarea(tarea)"
                                   class="btn btn-danger btn-xs">
                               <span class="glyphicon glyphicon-remove"></span>
                           </button>
@@ -71,8 +70,9 @@
               </li>
           </ul>
       </div>
-  </template>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
-  <script src="js/main.js"></script>
+  </template>      
+      <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script> 
+      <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+      <script src="js/main.js"></script>
   </body>
 </html>
