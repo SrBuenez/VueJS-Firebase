@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>   
+    <meta charset="utf-8">
+    <title>ToDo List</title>
+      
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>      
+  <div class="container" id="main">      
+      
+      <todo-list :tareas="tareas"></todo-list>
+      <!--<pre>{{ $data | json }}</pre>-->
+      
+  </div>
+  <template id="todo-template">
+      <div class="col-md-12">
+         <h2>ToDo List</h2>
+          <!-- Formulario -->
+          <form class="form" @submit.prevent="agregarTarea(nuevaTarea)">
+              <div class="input-group">
+                  <input v-model="nuevaTarea"
+                         type="text" class="form-control">
+                  <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit">
+                         <span class="glyphicon glyphicon-plus"></span> Añadir tarea </button>
+                  </span>                  
+              </div>
+          </form>          
+          <!-- Listado de tareas -->
+          <ul class="list-group">
+              <li v-for = "(tarea, index) in tareas"
+                  class="list-group-item clearfix">
+                  <p class="lead" :class="{completado: tarea.completado}">{{tarea.titulo}}</p>
+                  <input v-model="tarea.titulo"
+                         v-show="editandoTarea === index"
+                         @blur="editandoTarea = null, editarTarea(tarea)"
+                         type="text">
+                  <div>
+                      <span class="pull-right">
+                           <button @click="editandoTarea = index"
+                                   
+                                  v-show="tarea.completado === false"
+                                  class="btn btn-default btn-xs">
+                              <span class="glyphicon glyphicon-pencil"></span>
+                          </button>
+                          <button v-show="editandoTarea === index"
+                                  @click="editandoTarea = null, editarTarea(tarea)"
+                                  @click="editandoTarea = index"
+                                  class="btn btn-default btn-xs">
+                              <span class="glyphicon glyphicon-floppy-saved"></span>
+                          </button>                         
+                          <button @click="tarea.completado = true"
+                                  v-show="tarea.completado === false"
+                                  class="btn btn-primary btn-xs">
+                              <span class="glyphicon glyphicon-ok"></span>
+                          </button>
+                          <button @click="tarea.completado = false"
+                                  v-show="tarea.completado === true"
+                                  class="btn btn-primary btn-xs">
+                              <span class="glyphicon glyphicon-repeat"></span>
+                          </button>
+                          <button @click="eliminarTarea(index)"
+                                  class="btn btn-danger btn-xs">
+                              <span class="glyphicon glyphicon-remove"></span>
+                          </button>
+                      </span>
+                  </div>
+              </li>
+          </ul>
+      </div>
+  </template>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+  <script src="js/main.js"></script>
+  </body>
+</html>
