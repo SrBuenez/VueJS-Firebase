@@ -40,14 +40,13 @@
                          type="text">
                   <div>
                       <span class="pull-right">
-                           <button @click="editandoTarea = index"                                   
-                                  v-show="tarea.completado === false"
+                           <button @click="editandoTarea = index"
+                                  v-show="tarea.completado === false, editandoTarea != index"
                                   class="btn btn-default btn-xs">
                               <span class="glyphicon glyphicon-pencil"></span>
                           </button>
                           <button v-show="editandoTarea === index"
                                   @click="editandoTarea = null, editarTarea(tarea)"
-                                  @click="editandoTarea = index"
                                   class="btn btn-default btn-xs">
                               <span class="glyphicon glyphicon-floppy-saved"></span>
                           </button>                         
