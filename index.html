@@ -7,24 +7,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/main.css">
-  </head>
-  <body>      
-  <div class="container" id="main">      
       
-      <todo-list :tareas="tareas"></todo-list>
-      <!--<pre>{{ $data | json }}</pre>-->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>  
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>      
+      <script src="https://cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.js"></script>
+
+  </head>
+<body>      
+  <div class="container" id="main">       
+       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container"> 
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span> 
+            </button>
+            <a target="_blank" href="#" class="navbar-brand">ToDo List</a>
+        </div>
+        <div class="collapse navbar-collapse">            
+            <ul class="nav navbar-nav navbar-right">
+                <li v-if="!autentificado" class="active">
+                    <a @click="conectar()" href="#">Conectar</a>
+                </li>
+                <li v-if="autentificado" class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> 
+                        <strong>{{usuarioActivo.displayName}}</strong>
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </a>
+                    <ul class="dropdown-menu">                        
+                        <li class="divider"></li>
+                        <li>
+                            <div class="navbar-login navbar-login-session">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p>
+                                            <a @click="desconectar()" href="#" class="btn btn-danger btn-block">
+                                                Cerrar Sesion
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+      <todo-list :tareas="tareas" :autentificado="autentificado" :usuario-activo="usuarioActivo"></todo-list>
+      <pre>{{ $data | json }}</pre>
       
   </div>
-  <template id="todo-template">
+  <template id="todo-template">      
       <div class="col-md-12">
          <h2>ToDo List</h2>
           <!-- Formulario -->
-          <form class="form" @submit.prevent="agregarTarea(nuevaTarea)">
+          <form class="form" @submit.prevent="agregarTarea(nuevaTarea)" class="form">
               <div class="input-group">
-                  <input v-model="nuevaTarea"
+                  <input v-model="nuevaTarea" required
                          type="text" class="form-control">
                   <span class="input-group-btn">
-                      <button class="btn btn-default" type="submit">
+                      <button class="btn btn-default" type="submit" :disabled="!autentificado">
                          <span class="glyphicon glyphicon-plus"></span> Añadir tarea </button>
                   </span>                  
               </div>
@@ -33,35 +79,44 @@
           <ul class="list-group">
               <li v-for = "(tarea, index) in tareas"
                   class="list-group-item clearfix">
-                  <p class="lead" :class="{completado: tarea.completado}">{{tarea.titulo}}</p>
+                  <p class="lead" :class="{completado: tarea.completado}">                    
+                      {{tarea.titulo}}
+                      <small>({{ tarea.nombre }})</small>
+                  </p>
+                  
                   <input v-model="tarea.titulo"
                          v-show="editandoTarea === index"
                          @blur="editandoTarea = null, editarTarea(tarea)"
                          type="text">
-                  <div>
+                   <div >
                       <span class="pull-right">
                            <button @click="editandoTarea = index"
                                   v-show="tarea.completado === false, editandoTarea != index"
-                                  class="btn btn-default btn-xs">
+                                  class="btn btn-default btn-xs"
+                                   :disabled="!autentificado">
                               <span class="glyphicon glyphicon-pencil"></span>
                           </button>
                           <button v-show="editandoTarea === index"
                                   @click="editandoTarea = null, editarTarea(tarea)"
-                                  class="btn btn-default btn-xs">
+                                  class="btn btn-default btn-xs"
+                                  :disabled="!autentificado">
                               <span class="glyphicon glyphicon-floppy-saved"></span>
                           </button>                         
                           <button @click="actualizarEstadoTarea(true, tarea)"
                                   v-show="tarea.completado === false"
-                                  class="btn btn-primary btn-xs">
+                                  class="btn btn-primary btn-xs"
+                                  :disabled="!autentificado">
                               <span class="glyphicon glyphicon-ok"></span>
                           </button>
                           <button @click="actualizarEstadoTarea(false, tarea)"
                                   v-show="tarea.completado === true"
-                                  class="btn btn-primary btn-xs">
+                                  class="btn btn-primary btn-xs"
+                                  :disabled="!autentificado">
                               <span class="glyphicon glyphicon-repeat"></span>
                           </button>
                           <button @click="eliminarTarea(tarea)"
-                                  class="btn btn-danger btn-xs">
+                                  class="btn btn-danger btn-xs"
+                                  :disabled="!autentificado">
                               <span class="glyphicon glyphicon-remove"></span>
                           </button>
                       </span>

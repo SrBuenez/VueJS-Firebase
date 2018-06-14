@@ -9,6 +9,7 @@ var config = {
 firebase.initializeApp(config);
 
 var db = firebase.database();
+var provider = new firebase.auth.GoogleAuthProvider();
 
 Vue.component('todo-list', {
    template: '#todo-template',
@@ -19,11 +20,14 @@ Vue.component('todo-list', {
             editandoTarea : null,              
         }           
     },    
-    props: ['tareas'],
+    props: ['tareas', 'autentificado', 'usuarioActivo'],
     methods:{
         agregarTarea: function(tarea){           
             db.ref('tareas/').push({
-                titulo: tarea, completado: false
+                titulo: tarea, 
+                completado: false,
+                nombre: vm.usuarioActivo.displayName,                
+                uid: vm.usuarioActivo.uid,
             });
             this.nuevaTarea = '';
         },
@@ -50,6 +54,7 @@ var vm = new Vue({
     el: '#main',
     
     mounted: function(){
+        // Cargar los datos de BBDD
         db.ref('tareas/').on('value', function(snapshot) {
            vm.tareas = [];
             var objeto = snapshot.val();
@@ -57,14 +62,47 @@ var vm = new Vue({
                 vm.tareas.unshift({
                     '.key': propiedad,
                     completado: objeto[propiedad].completado,
-                    titulo: objeto[propiedad].titulo
+                    titulo: objeto[propiedad].titulo,
+                    nombre: objeto[propiedad].nombre,
+                    uid: objeto[propiedad].uid,
                 });
             }
             
-            });
-    },
-    
+        });        
+        
+        // Autenticación
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+             console.log('Conectado', user);
+              vm.autentificado = true;
+              vm. usuarioActivo = user;
+          } else {
+            console.warn('No conectado');
+              vm.autentificado = false;
+              vm. usuarioActivo = null;
+          }
+        });        
+    },    
     data:{
-        tareas:[]
-    } 
+        tareas:[],
+        autentificado: false,
+        usuarioActivo: null,
+    },
+    methods: {
+        conectar: function(){
+             provider.addScope('https://www.googleapis.com/auth/plus.login');
+
+               firebase.auth().signInWithPopup(provider).catch(function(error){       
+
+                   console.log('Error haciendo logIn: ', error);         
+
+               });
+        },
+        desconectar: function(){
+            firebase.auth().signOut().catch(function(error){
+                 console.log('Error haciendo logOut: ', error);
+            });
+        }
+    },
+
 });
